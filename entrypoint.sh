@@ -27,7 +27,7 @@ if [ -n "$ANTHROPIC_API_KEY" ]; then
     AUTH_DIR="$CONFIG_DIR/agents/main/agent"
     mkdir -p "$AUTH_DIR"
     AUTH_FILE="$AUTH_DIR/auth-profiles.json"
-    
+
     if [ ! -f "$AUTH_FILE" ]; then
         echo "🔑 Setting up Anthropic API key..."
         cat > "$AUTH_FILE" << EOF
@@ -79,4 +79,5 @@ echo "🤖 Telegram: Configure bot token in environment variables"
 echo ""
 
 # Run the gateway
-exec clawdbot gateway --port 18789 --bind lan --verbose "$@"
+# exec clawdbot gateway --port 18789 --bind lan --verbose "$@"
+exec clawdbot gateway --port 18789 --bind lan --verbose --allow-unconfigured "$@"

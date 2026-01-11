@@ -1,0 +1,23 @@
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Local state (should be in volumes, not repo)
+.clawdbot/
+clawd/

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://docs.clawd.bot/schema/clawdbot.json",
+  
+  "gateway": {
+    "port": 18789,
+    "bind": "lan",
+    "auth": {
+      "mode": "token"
+    }
+  },
+
+  "agents": {
+    "defaults": {
+      "workspace": "~/clawd",
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-20250514"
+      },
+      "sandbox": {
+        "mode": "off"
+      }
+    }
+  },
+
+  "providers": {
+    "whatsapp": {
+      "enabled": true,
+      "dm": {
+        "policy": "pairing"
+      }
+    },
+    "telegram": {
+      "enabled": true,
+      "dm": {
+        "policy": "pairing"
+      }
+    }
+  },
+
+  "session": {
+    "scope": "per-sender",
+    "idleMinutes": 60,
+    "resetTriggers": ["/new", "/reset"]
+  }
+}

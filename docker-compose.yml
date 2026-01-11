@@ -1,0 +1,35 @@
+services:
+  clawdbot-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clawdbot-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      # Persistent state (sessions, credentials, config)
+      - clawdbot-state:/home/clawdbot/.clawdbot
+      # Workspace (AGENTS.md, memory, skills)
+      - clawdbot-workspace:/home/clawdbot/clawd
+    environment:
+      # Anthropic API key (required)
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      # Optional: Gateway auth token (recommended for security)
+      - CLAWDBOT_GATEWAY_TOKEN=${CLAWDBOT_GATEWAY_TOKEN:-}
+      # Optional: Telegram bot token
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      # Timezone
+      - TZ=${TZ:-Europe/London}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  clawdbot-state:
+    driver: local
+  clawdbot-workspace:
+    driver: local

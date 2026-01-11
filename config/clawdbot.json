@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.clawd.bot/schema/clawdbot.json",
-  
+
   "gateway": {
     "port": 18789,
     "bind": "lan",

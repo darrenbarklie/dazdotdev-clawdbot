@@ -21,23 +21,21 @@ WORKSPACE_DIR="/root/clawd"
 
 echo "🦞 Clawdbot Gateway Starting..."
 
-# Create directories if they don't exist
+# Create directories
 mkdir -p "$CONFIG_DIR"
 mkdir -p "$WORKSPACE_DIR"
 mkdir -p "$CONFIG_DIR/agents/main/agent"
 
-# Copy default config if none exists
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "📝 No config found, creating default configuration..."
-    if [ -f "/app/config/clawdbot.json" ]; then
-        cp /app/config/clawdbot.json "$CONFIG_FILE"
-        echo "✅ Config created at $CONFIG_FILE"
-    else
-        echo "⚠️  No default config template found, clawdbot will use defaults"
-    fi
+# Always copy config from image (to pick up updates)
+if [ -f "/app/config/clawdbot.json" ]; then
+    echo "📝 Copying config from image..."
+    cp /app/config/clawdbot.json "$CONFIG_FILE"
+    echo "✅ Config created at $CONFIG_FILE"
+else
+    echo "⚠️  No config template found, clawdbot will use defaults"
 fi
 
-# Set up auth profiles for MiniMax
+# Always set up MiniMax auth from env var
 if [ -n "$MINIMAX_API_KEY" ]; then
     AUTH_FILE="$CONFIG_DIR/agents/main/agent/auth-profiles.json"
     echo "🔑 Setting up MiniMax API key..."
@@ -54,6 +52,8 @@ if [ -n "$MINIMAX_API_KEY" ]; then
 }
 EOF
     echo "✅ MiniMax auth profile created"
+else
+    echo "⚠️  No MINIMAX_API_KEY set"
 fi
 
 # Create basic AGENTS.md if workspace is empty

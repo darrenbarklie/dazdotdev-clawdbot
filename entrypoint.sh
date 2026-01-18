@@ -15,7 +15,7 @@ echo "🔑 Starting SSH server..."
 /usr/sbin/sshd
 echo "✅ SSH server running"
 
-CONFIG_DIR="$HOME/.clawdbot"
+CONFIG_DIR="/home/clawdbot/.clawdbot"
 CONFIG_FILE="$CONFIG_DIR/clawdbot.json"
 WORKSPACE_DIR="$HOME/clawd"
 

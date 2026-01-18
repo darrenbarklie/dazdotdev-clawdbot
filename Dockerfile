@@ -30,7 +30,7 @@ RUN curl -fsSL https://tailscale.com/install.sh | sh
 # Install pnpm globally
 ENV PNPM_HOME="/root/.local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@latest --activate && pnpm setup
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Install clawdbot globally
 RUN pnpm add -g clawdbot@latest

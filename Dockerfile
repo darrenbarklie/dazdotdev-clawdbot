@@ -1,6 +1,6 @@
 FROM node:22-bookworm-slim
 
-# Install dependencies for Puppeteer/Chromium (needed for WhatsApp QR) and general utilities
+# Install dependencies for Puppeteer/Chromium, SSH, and general utilities
 RUN apt-get update && apt-get install -y \
     curl \
     git \
@@ -21,35 +21,44 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
+    openssh-server \
     && rm -rf /var/lib/apt/lists/*
 
-# Install clawdbot globally (as root, before user switch)
-RUN npm install -g clawdbot@latest
+# Install Tailscale
+RUN curl -fsSL https://tailscale.com/install.sh | sh
+
+# Install pnpm globally
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Install clawdbot globally
+RUN pnpm add -g clawdbot@latest
 
 # Create non-root user for security
 RUN useradd -m -s /bin/bash clawdbot
 
 # Set up directories with correct permissions
 RUN mkdir -p /home/clawdbot/.clawdbot /home/clawdbot/clawd /app/config \
+    /run/sshd /home/clawdbot/.ssh /var/lib/tailscale \
     && chown -R clawdbot:clawdbot /home/clawdbot /app
+
+# SSH setup
+COPY --chown=clawdbot:clawdbot authorized_keys /home/clawdbot/.ssh/authorized_keys
+RUN chmod 700 /home/clawdbot/.ssh && chmod 600 /home/clawdbot/.ssh/authorized_keys
 
 # Copy config and entrypoint
 COPY --chown=clawdbot:clawdbot config/clawdbot.json /app/config/
-COPY --chown=clawdbot:clawdbot entrypoint.sh /app/
+COPY entrypoint.sh /app/
 
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
-# Switch to non-root user
-USER clawdbot
 WORKDIR /home/clawdbot
 
-# Expose gateway port
-EXPOSE 18789
+# Expose gateway port + SSH
+EXPOSE 18789 22
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:18789/health || exit 1
 
-# Use entrypoint script for setup
 ENTRYPOINT ["/app/entrypoint.sh"]

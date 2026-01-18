@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y \
 # Install Tailscale
 RUN curl -fsSL https://tailscale.com/install.sh | sh
 
-# Install pnpm globally
-ENV PNPM_HOME="/root/.local/share/pnpm"
+# Install pnpm globally with accessible path
+ENV PNPM_HOME="/usr/local/share/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -37,6 +37,10 @@ RUN pnpm add -g clawdbot@latest
 
 # Create non-root user for security
 RUN useradd -m -s /bin/bash clawdbot
+
+# Add pnpm to clawdbot user's PATH
+RUN echo 'export PNPM_HOME="/usr/local/share/pnpm"' >> /home/clawdbot/.bashrc && \
+    echo 'export PATH="$PNPM_HOME:$PATH"' >> /home/clawdbot/.bashrc
 
 # Set up directories with correct permissions
 RUN mkdir -p /home/clawdbot/.clawdbot /home/clawdbot/clawd /app/config \

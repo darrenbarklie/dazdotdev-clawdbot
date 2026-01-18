@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+echo "🔗 Starting Tailscale..."
+tailscaled --tun=userspace-networking --state=/var/lib/tailscale/tailscaled.state &
+sleep 2
+if [ -n "$TAILSCALE_AUTHKEY" ]; then
+    tailscale up --authkey="$TAILSCALE_AUTHKEY" --hostname=dazdotdev-clawdbot
+    echo "✅ Tailscale connected"
+else
+    echo "⚠️  No TAILSCALE_AUTHKEY set, skipping Tailscale auth"
+fi
+
+echo "🔑 Starting SSH server..."
+/usr/sbin/sshd
+echo "✅ SSH server running"
+
 CONFIG_DIR="$HOME/.clawdbot"
 CONFIG_FILE="$CONFIG_DIR/clawdbot.json"
 WORKSPACE_DIR="$HOME/clawd"
@@ -79,5 +93,4 @@ echo "🤖 Telegram: Configure bot token in environment variables"
 echo ""
 
 # Run the gateway
-# exec clawdbot gateway --port 18789 --bind lan --verbose "$@"
 exec clawdbot gateway --port 18789 --bind lan --verbose --allow-unconfigured "$@"

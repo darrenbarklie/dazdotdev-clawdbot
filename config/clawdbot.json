@@ -1,6 +1,5 @@
 {
   "$schema": "https://docs.clawd.bot/schema/clawdbot.json",
-
   "gateway": {
     "mode": "local",
     "port": 18789,
@@ -9,19 +8,25 @@
       "mode": "token"
     }
   },
-
   "agents": {
     "defaults": {
       "workspace": "~/clawd",
       "model": {
-        "primary": "anthropic/claude-sonnet-4-20250514"
+        "primary": "minimax/MiniMax-M2.1"
       },
       "sandbox": {
         "mode": "off"
       }
     }
   },
-
+  "auth": {
+    "profiles": {
+      "minimax:default": {
+        "provider": "minimax",
+        "mode": "api_key"
+      }
+    }
+  },
   "providers": {
     "whatsapp": {
       "enabled": true,
@@ -32,11 +37,36 @@
     "telegram": {
       "enabled": true,
       "dm": {
-        "policy": "pairing"
+        "policy": "allowlist",
+        "allowFrom": ["5988667035"]
       }
     }
   },
-
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "minimax": {
+        "baseUrl": "https://api.minimax.io/anthropic",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "MiniMax-M2.1",
+            "name": "MiniMax M2.1",
+            "reasoning": false,
+            "input": ["text"],
+            "cost": {
+              "input": 15,
+              "output": 60,
+              "cacheRead": 2,
+              "cacheWrite": 10
+            },
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
   "session": {
     "scope": "per-sender",
     "idleMinutes": 60,
